@@ -11,4 +11,16 @@ cd deploy
 
 dotnet Bloggen.Net.dll -s ../ -o bloggen-output
 
-# TODO: git clone page repo; copy contents of bloggen-output to repo root with overwrite
+git clone git@github.com:codernr/codernr.github.io.git
+
+rm -rf codernr.github.io/* !(".git")
+
+cp -r bloggen-output/ codernr.github.io/
+
+cd codernr.github.io
+
+git add --all
+
+git commit -am "Automatic github pages update from blog-source CI"
+
+# TODO: git push with token
