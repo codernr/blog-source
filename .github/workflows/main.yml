@@ -35,7 +35,7 @@ jobs:
       shell: bash
       run: |
         cd deploy
-        dotnet Bloggen.Net.dll -s ../ -o bloggen-output
+        dotnet Bloggen.Net.dll -s "${PWD}/../" -o bloggen-output
     
     - name: Update blog repository
       shell: bash
