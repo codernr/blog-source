@@ -59,3 +59,4 @@ jobs:
       run: |
         rm -rf deploy templates
         rm bloggen-net.tar.gz
+        echo "Finish"
