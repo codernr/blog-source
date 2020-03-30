@@ -3,3 +3,6 @@ subHeading: Learn, code, rock'n'roll
 template: clean-blog
 url: "https://codernr.github.io"
 postsPerPage: 10
+metaProperties: 
+  - property: "og:image"
+    content: "/assets/img/og-image.png"
