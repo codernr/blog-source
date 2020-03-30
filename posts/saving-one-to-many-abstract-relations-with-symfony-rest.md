@@ -1,6 +1,6 @@
 ---
 title: 'Saving One-To-Many abstract relations with Symfony REST'
-createdAt: '25-09-2016 08:00'
+createdAt: '2016-09-25'
 excerpt: 'Hanging out with friends of symfony'
 postedBy: codernr
 tags:
