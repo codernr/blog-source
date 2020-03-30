@@ -16,23 +16,46 @@ jobs:
       with:
         dotnet-version: 3.1.101
 
-    - name: Deploy site
+    - name: Checkout clean-blog template
+      shell: bash
+      run: git clone https://github.com/codernr/startbootstrap-clean-blog.git templates/clean-blog
+
+    - name: Download latest Bloggen.Net
       shell: bash
       env:
         GITHUB_TOKEN: ${{ secrets.GithubToken }}
-        TEMPLATE_URL: "https://github.com/codernr/startbootstrap-clean-blog.git"
+        USER_MAIL: ${{ secrets.Mail }}
       run: |
-        git clone $TEMPLATE_URL templates/clean-blog
         latest_data=$(curl -s "https://api.github.com/repos/codernr/bloggen-net/releases/latest")
         download_url=$(egrep -oh -m 1 "(https://github.com/codernr/bloggen-net/releases/download/v[0-9]\.[0-9]\.[0-9]/v[0-9]\.[0-9]\.[0-9]\.tar\.gz)" <<< $latest_data)
         curl -L $download_url --output bloggen-net.tar.gz
         tar -zxvf bloggen-net.tar.gz
+
+    - name: Generate site
+      shell: bash
+      run: |
         cd deploy
         dotnet Bloggen.Net.dll -s ../ -o bloggen-output
-        git clone "https://codernr:${GITHUB_TOKEN}@github.com/codernr/bloggen-net.git"
-        rm -rf codernr.github.io/* !(".git")
-        cp -r bloggen-output/ codernr.github.io/
+    
+    - name: Update blog repository
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GithubToken }}
+        USER_MAIL: ${{ secrets.Mail }}
+      run: |
+        git clone "https://codernr:${GITHUB_TOKEN}@github.com/codernr/codernr.github.io.git"
+        rm -r codernr.github.io/*/ codernr.github.io/*.html
+        cp -rf bloggen-output/ codernr.github.io/
         cd codernr.github.io
+        git config user.name codernr
+        git config user.email $USER_MAIL
         git add --all
         git commit -am "Automatic github pages update from blog-source CI"
         git push
+    
+    - name: Clean files
+      shell: bash
+      run: |
+        cd ../
+        rm -rf deploy templates
+        rm bloggen-net.tar.gz
