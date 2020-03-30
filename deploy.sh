@@ -11,7 +11,7 @@ cd deploy
 
 dotnet Bloggen.Net.dll -s ../ -o bloggen-output
 
-git clone git@github.com:codernr/codernr.github.io.git
+git clone https://github.com/codernr/startbootstrap-clean-blog.git
 
 rm -rf codernr.github.io/* !(".git")
 
