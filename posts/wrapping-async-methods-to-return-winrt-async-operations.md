@@ -1,7 +1,7 @@
 ---
 title: 'Wrapping async methods to return WinRT async operations'
 createdAt: '2019-09-21'
-posttedBy: codernr
+postedBy: codernr
 tags:
     - WinRT
     - 'Universal Windows Platform'
