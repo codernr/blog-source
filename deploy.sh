@@ -5,13 +5,13 @@ download_url=$(egrep -oh -m 1 "(https://github.com/codernr/bloggen-net/releases/
 
 curl -L $download_url --output bloggen-net.tar.gz
 
-tar -zxvf band-page-genarator.tar.gz
+tar -zxvf bloggen-net.tar.gz
 
 cd deploy
 
 dotnet Bloggen.Net.dll -s ../ -o bloggen-output
 
-git clone https://github.com/codernr/startbootstrap-clean-blog.git
+git clone https://github.com/codernr/bloggen-net.git
 
 rm -rf codernr.github.io/* !(".git")
 
