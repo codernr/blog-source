@@ -45,8 +45,8 @@ jobs:
       run: |
         cd deploy
         git clone "https://codernr:${GITHUB_TOKEN}@github.com/codernr/codernr.github.io.git"
-        rm -r codernr.github.io/*/ codernr.github.io/*.html
-        cp -rf bloggen-output/ codernr.github.io/
+        rm -rf codernr.github.io/*/ codernr.github.io/*.html
+        cp -rf bloggen-output/* codernr.github.io/
         cd codernr.github.io
         git config user.name codernr
         git config user.email $USER_MAIL
@@ -59,4 +59,3 @@ jobs:
       run: |
         rm -rf deploy templates
         rm bloggen-net.tar.gz
-        echo "Finish"
