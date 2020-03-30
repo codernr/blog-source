@@ -35,8 +35,7 @@ jobs:
       shell: bash
       run: |
         cd deploy
-        echo $PWD
-        dotnet Bloggen.Net.dll -s "${PWD}/../" -o "${PWD}/bloggen-output"
+        dotnet Bloggen.Net.dll -s "${PWD}/../" -o bloggen-output
     
     - name: Update blog repository
       shell: bash
@@ -44,7 +43,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GithubToken }}
         USER_MAIL: ${{ secrets.Mail }}
       run: |
-        echo $PWD
+        cd deploy
         git clone "https://codernr:${GITHUB_TOKEN}@github.com/codernr/codernr.github.io.git"
         rm -r codernr.github.io/*/ codernr.github.io/*.html
         cp -rf bloggen-output/ codernr.github.io/
@@ -58,6 +57,5 @@ jobs:
     - name: Clean files
       shell: bash
       run: |
-        cd ../
         rm -rf deploy templates
         rm bloggen-net.tar.gz
