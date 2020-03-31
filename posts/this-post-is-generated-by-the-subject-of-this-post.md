@@ -6,8 +6,6 @@ tags:
     - 'dotnet core'
     - 'static site generator'
     - 'github pages'
-    - 'ci/cd'
-    - 'github actions'
 excerpt: 'I wrote a static blog generator in dotnet core to support my professional blog that you are currently reading.'
 ---
 
@@ -33,46 +31,46 @@ The goal was to learn by experimenting, so I didn't want to copy an existing sof
 
 So I created a blank console app project and split the responsibilities in modules with well defined interfaces. The modules are wired together through the default dotnet core DI container.
 
-#### [Configuration](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Config)
+#### Configuration
 
-There are two types of configuration:
+There are [two types of configuration](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Config):
 
 * command line config (source directory and output directory) is parsed by [CommandLine package](https://github.com/commandlineparser/commandline)
 * other config values come from source `config.yml` that is parsed by default dotnet configuration provider, extended by [Yaml configuration parser package](https://www.nuget.org/packages/NetEscapades.Configuration.Yaml)
 
 The YAML provider is dependent on [YamlDotNet](https://github.com/aaubry/YamlDotNet) that is also used by the software.
 
-#### [Source](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Source)
+#### Source
 
-This module defines an interface through which the software can get all the required sources (index template, layout templates, partials, posts, pages). The concrete implementation is a [FileSystemSourceHandler](https://github.com/codernr/bloggen-net/blob/develop/Bloggen.Net/Source/FileSystemSourceHandler.cs) that reads the sources from the filesystem.
+This [module](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Source) defines an interface through which the software can get all the required sources (index template, layout templates, partials, posts, pages). The concrete implementation is a [FileSystemSourceHandler](https://github.com/codernr/bloggen-net/blob/develop/Bloggen.Net/Source/FileSystemSourceHandler.cs) that reads the sources from the filesystem.
 
-#### [Serialization](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Serialization)
+#### Serialization
 
-This module is responsible for the deserialization of front matter headers in posts and pages with their metadata. Uses YamlDotNet.
+This [module](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Serialization) is responsible for the deserialization of front matter headers in posts and pages with their metadata. Uses YamlDotNet.
 
-#### [Model](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Model)
+#### Model
 
-This module represents the data model and relations between blog objects' metadata. Currently there are three types:
+This [module](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Model) represents the data model and relations between blog objects' metadata. Currently there are three types:
 
 * `IPost`: represents a blog post metadata
 * `IPage`: represents a page metadata
 * `ITag`: represents a tag metadata
 
-The main interface is `IContext` (inspired by EF core) that holds the collections of these three types with references to each other. The implementation `Context` collects all the metadata through [serialization](#serialization) andd cross-references these objects.
+The main interface is `IContext` (inspired by EF core) that holds the collections of these three types with references to each other. The implementation `Context` collects all the metadata through [serialization](#serialization) and cross-references these objects.
 
-#### [Content](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Content)
+#### Content
 
-This module parses the markdown from the source post and page files and renders them to html strings. The concrete implementation uses [MarkDig](https://github.com/lunet-io/markdig).
+This [module](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Content) parses the markdown from the source post and page files and renders them to html strings. The concrete implementation uses [MarkDig](https://github.com/lunet-io/markdig).
 
-#### [Template](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Template)
+#### Template
 
-This module renders templates to the given `TextWriter`.
+This [module](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Template) renders templates to the given `TextWriter`.
 
 You can hardly find a good templating library in the dotnet core ecosystem if you can't use Razor. Razor is _tightly coupled to aspnet core_ and it's a bit hacky to use it in a console application. I had another project where I generate my rock band's static homepage based on social media API-s, and I used [Handlebars.Net](https://github.com/rexm/Handlebars.Net), a handlebars.js port there. It worked well so I kept it.
 
-#### [Output](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Output)
+#### Output
 
-This module puts the whole thing together. It has only a `Generate()` public method and does the work internally. It also holds the concrete implementations of the model interfaces defined in [Model](#model). The underlying implementation is [FileSystemOutputHandler](https://github.com/codernr/bloggen-net/blob/develop/Bloggen.Net/Output/FileSystemOutputHandler.cs) that renders all the parts to corresponding html pages in their subfolders.
+This [module](https://github.com/codernr/bloggen-net/tree/develop/Bloggen.Net/Output) puts the whole thing together. It has only a `Generate()` public method and does the work internally. It also holds the concrete implementations of the model interfaces defined in [Model](#model). The underlying implementation is [FileSystemOutputHandler](https://github.com/codernr/bloggen-net/blob/develop/Bloggen.Net/Output/FileSystemOutputHandler.cs) that renders all the parts to corresponding html pages in their subfolders.
 
 The generation process is something like this:
 
