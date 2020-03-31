@@ -22,9 +22,9 @@ To make this app work, I created a list of that I'd need for it:
 * [running the process periodically](#periodic-run)
 * [retrying if an exception occurs](#retry)
 
-!!!! You can find the whole source code in my GitHub so I will show only parts of it here
-!!!!
-!!!! Repository: [https://github.com/codernr/ipwatcher](https://github.com/codernr/ipwatcher)
+> You can find the whole source code in my GitHub so I will show only parts of it here
+>
+> Repository: [https://github.com/codernr/ipwatcher](https://github.com/codernr/ipwatcher)
 
 ##### The background task <a id="background-task"></a>
 
@@ -49,13 +49,13 @@ namespace IPWatcher
 
 That's pretty much it!
 
-!!! Find a complete guide on background tasks on [the microsoft developer portal](https://developer.microsoft.com/en-us/windows/iot/docs/backgroundapplications)
+> Find a complete guide on background tasks on [the microsoft developer portal](https://developer.microsoft.com/en-us/windows/iot/docs/backgroundapplications)
 
 ##### The config file <a id="config"></a>
 
 I wrote a tiny singleton `Config` class with a bunch of public properties that were gonna be loaded from a config JSON. I had to create only two methods, `CreateInstance` that deserializes the app's `LocalState/config.json` to these properties and a `SaveInstance` that serializes the modified object back to JSON.
 
-!!! To easily serialize/deserialize objects from JSON you can use the [Newtonsoft.Json NuGet package](https://www.nuget.org/packages/Newtonsoft.Json/)
+> To easily serialize/deserialize objects from JSON you can use the [Newtonsoft.Json NuGet package](https://www.nuget.org/packages/Newtonsoft.Json/)
 
 I copy only the methods here, you can find the whole source on [GitHub](https://github.com/codernr/ipwatcher/blob/master/IPWatcher/Config.cs)
 
@@ -81,7 +81,7 @@ public static async Task SaveInstance()
 }
 ```
 
-!!! Read more about storing and retrieving app data [on the MSDN site](https://msdn.microsoft.com/en-us/windows/uwp/app-settings/store-and-retrieve-app-data)
+> Read more about storing and retrieving app data [on the MSDN site](https://msdn.microsoft.com/en-us/windows/uwp/app-settings/store-and-retrieve-app-data)
 
 A sample `config.json` file looks like this:
 
@@ -106,7 +106,7 @@ A sample `config.json` file looks like this:
 
 As you can see, all of these parameters are preconfigured except the last one, the `IpAddress` that is going to be changed by the app.
 
-! Important: you have to manually put the config.json to the app LocalState folder, otherwise you will get a FileNotFoundException when instantiating the config object!
+> Important: you have to manually put the config.json to the app LocalState folder, otherwise you will get a FileNotFoundException when instantiating the config object!
 
 ##### Reading the external IP <a id="external-ip"></a>
 
@@ -169,9 +169,9 @@ private async Task SendMail(string ip)
 
 Just a few lines and I can send emails like Hillary Clinton!
 
-!! If you use Gmail SMTP you shoul keep in mind this ([as written on the package GitHub](https://github.com/LightBuzz/SMTP-WinRT)):
-!!
-!! Since this does not use OAUTH2, Gmail considers this a "less secure app".  To use this with Gmail, the "Access for less secure apps" setting on the account will have to be changed to "Enable".
+> If you use Gmail SMTP you shoul keep in mind this ([as written on the package GitHub](https://github.com/LightBuzz/SMTP-WinRT)):
+>
+> Since this does not use OAUTH2, Gmail considers this a "less secure app".  To use this with Gmail, the "Access for less secure apps" setting on the account will have to be changed to "Enable".
 
 ##### Running periodically <a id="periodic-run"></a>
 
@@ -229,7 +229,7 @@ I have two points in the application where it uses network connection, checking 
 
 So back to the app, I had two cases where a retry policy is useful if any exception occurs (e.g. no internet connection at the moment). I didn't use the Microsoft Transient Fault Handling Application Block from the above mentioned article, but chose the Polly Nuget package that seems a bit more user friendly to me.
 
-!!! Visit the Polly GitHub page for documentation: [https://github.com/App-vNext/Polly](https://github.com/App-vNext/Polly)
+> Visit the Polly GitHub page for documentation: [https://github.com/App-vNext/Polly](https://github.com/App-vNext/Polly)
 
 Let's see the extended `Check` method with Polly:
 

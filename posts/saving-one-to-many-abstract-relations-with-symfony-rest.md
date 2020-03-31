@@ -131,11 +131,11 @@ class DrumsInstrument extends Instrument
 }
 ```
 
-!!! Notice the `cascade={"persist", "remove"}` parameter in the `Person`'s `$instruments` annotation, using this, when a `Person` object is persisted to database, the related `Instrument` objects are persisted too
+> Notice the `cascade={"persist", "remove"}` parameter in the `Person`'s `$instruments` annotation, using this, when a `Person` object is persisted to database, the related `Instrument` objects are persisted too
 
 Then I created a REST resource controller for my `Person` entity:
 
-! If you need some information about how to set up a REST api with Symfony, you should [check out the documentation](http://symfony.com/doc/current/bundles/FOSRestBundle/index.html)
+> If you need some information about how to set up a REST api with Symfony, you should [check out the documentation](http://symfony.com/doc/current/bundles/FOSRestBundle/index.html)
 
 ```php
 namespace AppBundle\Controller;
@@ -229,4 +229,4 @@ use JMS\Serializer\Annotation as JMS;
 
 Using this one line solves our problem, and posting the previous JSON we get a HTTP 201 message with the created entities!
 
-!!! You can check out th `@Type` annotation reference [here](http://jmsyst.com/libs/serializer/master/reference/annotations#type)
+> You can check out th `@Type` annotation reference [here](http://jmsyst.com/libs/serializer/master/reference/annotations#type)
