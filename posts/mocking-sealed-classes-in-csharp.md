@@ -1,6 +1,6 @@
 ---
 title: 'Mocking sealed classes in C#'
-createdAt: 2016-10-13
+createdAt: '2016-10-13 14:00'
 excerpt: 'How to wrap sealed classes with custom classes that implement mockable interface'
 tags:
     - 'C#'

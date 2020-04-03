@@ -1,6 +1,6 @@
 ---
 title: 'Windows IoT external IP updater'
-createdAt: '2016-09-30'
+createdAt: '2016-09-30 14:00'
 excerpt: 'Creating a Windows 10 core IoT background application that periodically checks the external IP and notifies in email if changed'
 postedBy: codernr
 tags:

@@ -1,6 +1,6 @@
 ---
 title: 'Wrapping async methods to return WinRT async operations'
-createdAt: '2019-09-21'
+createdAt: '2019-09-21 14:00'
 postedBy: codernr
 tags:
     - WinRT
