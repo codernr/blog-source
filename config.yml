@@ -7,3 +7,4 @@ dateFormat: 'yyyy-MM-dd HH:mm'
 metaProperties: 
   - property: "og:image"
     content: "/assets/img/og-image.png"
+gTag: 'UA-84292267-2'
