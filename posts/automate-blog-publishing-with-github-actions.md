@@ -121,3 +121,35 @@ This part clones the main user page repository, overwrites the files in it with 
 
 And that's it, the page is published!
 
+### The template
+
+I'm constantly developing the generator software and the template along with it so I also wanted an automation mechanism to update the blog when I update the template. So I made the `repository_dispatch` trigger for the workflow described in the previous section, that is triggered by the [template action](https://github.com/codernr/startbootstrap-clean-blog/blob/master/.github/workflows/main.yml) when changes are pushed to master. It then posts the proper json to Github API to trigger the specified event (`trigger-ci`).
+
+[You can read more about this event here.](https://developer.github.com/v3/repos/#create-a-repository-dispatch-event)
+
+And this is the workflow that sends the event:
+
+```yml
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  webhook:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Dispatch update event
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.BlogSourceToken }}
+      run: |
+        curl -H "Accept: application/vnd.github.everest-preview+json" \
+        -H "Authorization: token ${GITHUB_TOKEN}" \
+        --request POST \
+        --data '{"event_type": "trigger-ci"}' \
+        https://api.github.com/repos/codernr/blog-source/dispatches
+```
+
+If you have any interesting experiences or questions about this field, let me know in the comments!
