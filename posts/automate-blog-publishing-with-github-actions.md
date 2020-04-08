@@ -1,6 +1,6 @@
 ---
 title: 'Automate blog publishing with Github Actions'
-createdAt: '2020-04-08 13:00'
+createdAt: '2020-04-08 17:35'
 excerpt: "I've created a set of github workflows to automate the process of publishing new posts to my static github pages blog."
 postedBy: codernr
 tags:
@@ -72,7 +72,7 @@ This line clones the template repository to the directory defined by config.
 
 #### 2. Download latest Bloggen.Net generator
 
-This script reads the latest release url from Github API, then downloads unpacks it.
+This script reads the latest release url from Github API, then downloads and unpacks it.
 
 ```yml
 - name: Download latest Bloggen.Net
