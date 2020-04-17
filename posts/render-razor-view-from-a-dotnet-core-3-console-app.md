@@ -1,6 +1,6 @@
 ---
 title: 'Render Razor view from a dotnet core 3 app'
-createdAt: '2020-04-16 13:00'
+createdAt: '2020-04-17 12:45'
 excerpt: 'Razor views a strongly coupled to aspnet core mvc but you can use them in a console app with this minimum setup.'
 postedBy: codernr
 tags:
@@ -10,7 +10,7 @@ tags:
   - 'console application'
 ---
 
-My colleague and I were wondering how we could use our existing, predefined Razor views in a console application that is ran to do some background job. Typical use case: automated regular email sending. We were searching for the solution but all we found were examples of this case in __dotnet core 2.1__. So we had to do some investigation how to upgrade to __netcoreapp3.1__.
+My colleague and I were wondering how we could use our existing, predefined Razor views in a console application that is ran to do some background job. Typical use case: automated regular email sending. We were searching for the solution but all we found were examples of this case in __dotnet core 2.1__. So we had to do some investigation on how to upgrade to __netcoreapp3.1__.
 
 The example project was one of the [aspnet entropy](https://github.com/aspnet/Entropy) experimental repository: https://github.com/aspnet/Entropy/tree/master/samples/Mvc.RenderViewToString
 
