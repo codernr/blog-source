@@ -8,6 +8,9 @@ tags:
   - 'dependency injection'
   - 'decorator pattern'
   - 'dotnet core'
+metaProperties:
+  - property: 'og:image'
+    content: '/assets/img/posts/registering-decorators-in-aspnet-core-di.png'
 ---
 
 There are tons of articles about [why you should avoid inheritance](https://codeburst.io/inheritance-is-evil-stop-using-it-6c4f1caf5117) when you can, how [hard it makes readability of code and maintainability](http://neethack.com/2017/04/Why-inheritance-is-bad/) of large projects, and how you can substitute it with, for example, using [composition](https://medium.com/better-programming/composition-over-inheritance-b58264af8c21) or [decorator](https://dzone.com/articles/is-inheritance-dead) pattern. The subject of this post is not to discuss these topics but to show how you can use decorator pattern in ASP.NET Core and register multiple classes implementing the same interface (and decorating each other) in its dependency injection container.
