@@ -42,7 +42,7 @@ public class BasicServiceClient : IServiceClient
 
 ### When extra functionality is needed
 
-Let's say you have two different environments that need two different authentication method. One uses an api key that is sent in `X-Api-Key` header, the other uses a bearer token in the `Authentication` header. Then numerous headers must be set in each environment with different permutations, so inheritance is not an option to avoid repetiton, you have to use decorators for dynamically set every header. But for the sake of simplicity we use only those two decorators:
+Let's say you have two different environments that need two different authentication method. One uses an api key that is sent in `X-Api-Key` header, the other uses a bearer token in the `Authentication` header. Then numerous headers must be set in each environment with different permutations, so inheritance is not an option to avoid repetiton, you have to use decorators to dynamically set every header. But for the sake of simplicity we use only those two decorators:
 
 ```cs
 public class ApiKeyServiceClient : IServiceClient
@@ -63,7 +63,7 @@ public class BearerTokenServiceClient : IServiceClient
 {
     private readonly BasicServiceClient serviceClient;
 
-    public ApiKeyServiceClient(BasicServiceClient serviceClient) => this.serviceClient = serviceClient;
+    public BearerTokenServiceClient(BasicServiceClient serviceClient) => this.serviceClient = serviceClient;
 
     public Task<HttpResponseMessage> SendAsync(HttpRequestMessage message)
     {
@@ -114,7 +114,7 @@ public class BearerTokenServiceClient : IServiceClient
 {
     private readonly IServiceClient serviceClient;
 
-    public ApiKeyServiceClient(IServiceClient serviceClient) => this.serviceClient = serviceClient;
+    public BearerTokenServiceClient(IServiceClient serviceClient) => this.serviceClient = serviceClient;
 
     public Task<HttpResponseMessage> SendAsync(HttpRequestMessage message)
     {
@@ -125,7 +125,7 @@ public class BearerTokenServiceClient : IServiceClient
 }
 ```
 
-Now you can use them in any decorator chain, you could even use them together to add api key and bearer tokens to the same HttpRequestMessage. That doesn't make much sense in real world, but let's say you want all that headers now on the same message. Now you have to register **three** implementations of **the same** interface and you want them to be chained in an exactly defined order. ASP.NET Core dependency injection allows you to register multiple implementations with the same interface but then it won't figure out which to inject in which constructor so you have to explicitly define how they are injected.
+Now you can use them in any decorator chain, you could even use them together to add api key and bearer tokens to the same `HttpRequestMessage`. That doesn't make much sense in real world, but let's say you want all that headers now on the same message. Now you have to register **three** implementations of **the same** interface and you want them to be chained in an exactly defined order. ASP.NET Core dependency injection allows you to register multiple implementations with the same interface but then it won't figure out which to inject in which constructor so you have to explicitly define how they are injected.
 
 ### The solution 
 
