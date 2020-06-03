@@ -1,6 +1,6 @@
 ---
 title: 'Registering decorators in ASP.NET Core DI'
-createdAt: '2020-06-03 12:30'
+createdAt: '2020-06-03 10:00'
 excerpt: 'This post shows how you can register multiple classes that implement the same interface and decorate each other in ASP.NET Core dependency injection container'
 postedBy: codernr
 tags:
