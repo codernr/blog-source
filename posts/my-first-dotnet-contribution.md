@@ -1,7 +1,7 @@
 ---
 title: 'My first dotnet contribution'
 createdAt: '2020-07-03 15:00'
-excerpt: 'I posted a pull request fixing a default value in dotnet api docs and it got accepted and merged. It ain't much, but it's honest work.'
+excerpt: "I posted a pull request fixing a default value in dotnet api docs and it got accepted and merged. It ain't much, but it's honest work."
 postedBy: codernr
 tags:
   - 'dotnet core'
@@ -10,6 +10,9 @@ tags:
   - 'open source'
   - 'SignedXml'
   - 'SHA'
+metaProperties:
+  - property: 'og:image'
+    content: '/assets/img/posts/pull-request.png'
 ---
 
 Recently I built a SOAP communication layer in dotnet core. I had to create a signed SAML request so I used [SignedXml](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.xml.signedxml) class tu build the signature. [References](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.xml.reference) had to be added with `SHA1` [DigestMethod](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.xml.reference.digestmethod), and, as the documentation said, it was the default value of the property.
