@@ -38,3 +38,108 @@ There is an abstract class called `BackgroundTask` as part of the runtime ([see 
 #### Timed background tasks example
 
 There is also a [working example](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio#timed-background-tasks) of a regularly called method but that one is executed synchronously and it doesn't take into account that one job execution may be longer than the interval itself.
+
+#### Consuming a scoped service in a background task
+
+This [example in the docs](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio#consuming-a-scoped-service-in-a-background-task) is not about the hosted service itself but the way you can access a scoped service like `DbContext` from the hosted service. First you have to inject the `IServiceProvider` into the constructor of the hosted service then you can create a new scope in your method and get the required service from the service provider of that scope. That will be useful when I want to access my database table through `DbContext`.
+
+### Putting it together
+
+To achieve my goal and also handle graceful shutdown I have to merge the concepts of the `BackgroundTask` and the timed example and use the scoped service provider in the part that will be used regularly. I used the source of `BackgroundTask` as a starting point. Let's see it!
+
+#### Constructor
+
+```cs
+public HostedExecutionService(IServiceProvider services) => this._services = services;
+```
+
+Nothing special, I inject the service provider to get `DbContext` later.
+
+#### StartAsync
+
+```cs
+public Task StartAsync(CancellationToken cancellationToken)
+{
+  this._stoppingCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+  this._timer = new Timer(this.FireTask, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30));
+
+  return Task.CompletedTask;
+}
+```
+
+First I create a linked token source that fires when the original one and save it in a private field. (Same code as in `BackgroundTask`). Then I create a timer that calls `FireTask` method in every 30 seconds. (Before the first call it waits 10 seconds.) This is the part that I took from the timer example.
+
+#### FireTask
+
+```cs
+private void FireTask(object state)
+{
+  if (this._executingTask == null || this._executingTask.IsCompleted)
+  {
+    this._executingTask = this.ExecuteNextJobAsync(this._stoppingCts.Token);
+  }
+}
+```
+
+This is the method that gets called periodically. It checks if there is no previous task running and then kicks off `ExecuteNextJobAsync` task passing it the cancellation token and storing it in the `_executingTask` private field.
+
+#### ExecuteNextJobAsync
+
+```cs
+private async Task ExecuteNextJobAsync(CancellationToken cancellationToken)
+{
+  using var scope = this.services.CreateScope();
+
+  var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+
+  // whatever logic to retrieve the next job
+  var nextJobData = await context.Jobs.FirstOrDefaultAsync();
+
+  if (nextJobData == null)
+  {
+    // no next job
+    return;
+  }
+
+  // here comes the custom logic that executes the job based on the job data
+}
+```
+
+This is the actual long running method that retrieves the job data and executes it. This async task is stored in `_executingTask` that is checked if ready before the next interval fires `ExecuteNextJobAsync` again through `FireTask`.
+
+#### StopAsync / Dispose
+
+```cs
+public async Task StopAsync(CancellationToken cancellationToken)
+{
+  this._timer.Change(Timeout.Infinite, 0);
+
+  if (this._executingTask == null || this._executingTask.IsCompleted)
+  {
+    return;
+  }
+
+  try
+  {
+    this._stoppingCts.Cancel();
+  }
+  finally
+  {
+    await Task.WhenAny(this._executingTask, Task.Delay(Timeout.Infinite, cancellationToken))
+  }
+}
+
+public void Dispose()
+{
+  this._timer.Dispose();
+  this._stoppingCts?.Cancel();
+}
+```
+
+Basically this code is the same as the one you find in the `BackgroundService` source plus stopping the timer but I think it needs some explanation. This method gets called when the system starts a graceful shutdown. The process:
+
+1. stop the timer
+2. If there was no task or the last one has finished, everything's fine, we can shut down and return
+3. `_executingTask` is still running so let's signal the cancellation with `_stoppingCts` of which token is passed in `ExecuteNextJobAsync`
+4. Finally wait for the first of `_executingTask` and `cancellationToken` to finish/fire. Note that `cancellationToken` here signals the end of the graceful shutdown process so you have to return when it is fired no matter what.
