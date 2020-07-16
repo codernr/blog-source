@@ -29,4 +29,12 @@ I need some kind of timer that fires regularly, regardless of any circumstance. 
 
 The [aforementioned documentation page](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio) gives me almost all the information that is needed to achieve this so I just summarize it if you're lazy to read it (don't be):
 
-To implement a hosted service you have to create a class that implements `IHostedService` interface. It has two methods: `StartAsync` that contains the logic to start the background task, and `StopAsync` that is triggered when the host is performing a graceful shutdown. That is the place where you can stop your remaining operations. Then you can register this class as a hosted service in your application's `Program.cs` (for details see the docs).
+To implement a hosted service you have to create a class that implements `IHostedService` interface. It has two methods: `StartAsync` that contains the logic to start the background task, and `StopAsync` that is triggered when the host is performing a graceful shutdown. That is the place where you can stop your remaining operations. Then you can register this class as a hosted service in your application's `Program.cs` (for details see the docs). And that's it.
+
+#### BackgroundTask
+
+There is an abstract class called `BackgroundTask` as part of the runtime ([see source code here](https://github.com/dotnet/runtime/blob/master/src/libraries/Microsoft.Extensions.Hosting.Abstractions/src/BackgroundService.cs)). If your service extends this class you can avoid writing boilerplate code you should write if you implement the interface only. You just have to override `ExecuteAsync`, put your long running logic there and it will be run in the background. The problem with it is that I can't execute something regularly in this method, because it is one long running task. Executing a job then waiting for a fixed time with `Task.Delay` wouldn't be truly regular because the length of each interval would depend on the length of each executed job.
+
+#### Timed background tasks example
+
+There is also a [working example](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio#timed-background-tasks) of a regularly called method but that one is executed synchronously and it doesn't take into account that one job execution may be longer than the interval itself.
