@@ -1,6 +1,6 @@
 ---
 title: 'Execute queue with ASP.NET core timed hosted service'
-createdAt: '2020-07-16 15:30'
+createdAt: '2020-07-27 12:30'
 excerpt: 'This post shows how to create a hosted background service that polls a database for queued jobs on a regular basis and executes them, one at a time.'
 postedBy: codernr
 tags:
@@ -12,6 +12,8 @@ tags:
 ---
 
 The best way to execute long running tasks in the background using ASP.NET Core is creating hosted services. There is a [great documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio) of how you can achieve this on Microsoft docs, but I took these basic examples a bit further.
+
+> To see the working example check out my repository: https://github.com/codernr/timed-hosted-service-example
 
 ### The problem
 
@@ -50,10 +52,11 @@ To achieve my goal and also handle graceful shutdown I have to merge the concept
 #### Constructor
 
 ```cs
-public HostedExecutionService(IServiceProvider services) => this._services = services;
+public TimedHostedService(IServiceProvider services, ILogger<TimedHostedService> logger) =>
+  (this.services, this.logger) = (services, logger);
 ```
 
-Nothing special, I inject the service provider to get `DbContext` later.
+Nothing special, I inject the service provider to get `DbContext` later plus a logger to be able to follow the execution on the console.
 
 #### StartAsync
 
@@ -63,6 +66,8 @@ public Task StartAsync(CancellationToken cancellationToken)
   this._stoppingCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
   this._timer = new Timer(this.FireTask, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30));
+
+  this.logger.LogInformation("Started timer");
 
   return Task.CompletedTask;
 }
@@ -77,7 +82,12 @@ private void FireTask(object state)
 {
   if (this._executingTask == null || this._executingTask.IsCompleted)
   {
+    this.logger.LogInformation("No task is running, check for new job");
     this._executingTask = this.ExecuteNextJobAsync(this._stoppingCts.Token);
+  }
+  else
+  {
+    this.logger.LogInformation("There is a task still running, wait for next cycle");
   }
 }
 ```
@@ -91,22 +101,32 @@ private async Task ExecuteNextJobAsync(CancellationToken cancellationToken)
 {
   using var scope = this.services.CreateScope();
 
-  var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+  var context = scope.ServiceProvider.GetRequiredService<JobDbContext>();
 
   // whatever logic to retrieve the next job
-  var nextJobData = await context.Jobs.FirstOrDefaultAsync();
+  var nextJobData = await context.JobDatas.FirstOrDefaultAsync();
 
   if (nextJobData == null)
   {
     // no next job
+    this.logger.LogInformation("No new job found, wait for next cycle");
     return;
   }
 
-  // here comes the custom logic that executes the job based on the job data
+  // simulate long running job
+  this.logger.LogInformation("Execute job with Id: {0} Delay: {1}", nextJobData.Id, nextJobData.Delay);
+
+  await Task.Delay(TimeSpan.FromSeconds(nextJobData.Delay));
+
+  this.logger.LogInformation("Job execution finished (Id: {0})", nextJobData.Id);
+
+  // remove executed job from queue
+  context.Remove(nextJobData);
+  await context.SaveChangesAsync();
 }
 ```
 
-This is the actual long running method that retrieves the job data and executes it. This async task is stored in `_executingTask` that is checked if ready before the next interval fires `ExecuteNextJobAsync` again through `FireTask`.
+This is the actual long running method that retrieves the job data and executes it. This async task is stored in `_executingTask` that is checked if ready before the next interval fires `ExecuteNextJobAsync` again through `FireTask`. This example uses a simulation that calls a `Task.Delay` with seconds based on job data.
 
 #### StopAsync / Dispose
 
@@ -143,3 +163,13 @@ Basically this code is the same as the one you find in the `BackgroundService` s
 2. If there was no task or the last one has finished, everything's fine, we can shut down and return
 3. `_executingTask` is still running so let's signal the cancellation with `_stoppingCts` of which token is passed in `ExecuteNextJobAsync`
 4. Finally wait for the first of `_executingTask` and `cancellationToken` to finish/fire. Note that `cancellationToken` here signals the end of the graceful shutdown process so you have to return when it is fired no matter what.
+
+### Try it out
+
+You can check how the code works if you check out my [exmple project from github](https://github.com/codernr/timed-hosted-service-example).
+
+To set your project up after git clone, you have to:
+
+* run `dotnet restore`
+* run `dotnet ef database update` (`dotnet-ef` tool has to be installed)
+* add different jobs to the created table to test functionality
