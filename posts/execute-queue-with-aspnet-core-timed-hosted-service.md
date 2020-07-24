@@ -15,11 +15,11 @@ The best way to execute long running tasks in the background using ASP.NET Core 
 
 ### The problem
 
-There is a job queue that is represented by a database table. Items are randomly pushed to this table by another application. I want to regularly check this queue and if I find a new job, I want to execute it. (Always one at a time, no concurrency.)
+There is a job queue that is represented by a database table. Items are randomly pushed to this table by another application. I want to check this queue regularly and if I find a new job, I want to execute it. (Always one at a time, no concurrency.)
 
 ### The program flow
 
-I need some kind of timer that fires regularly, regardless of any circumstance. When the timer fires, a piece of code has to be run that executes a job if it finds one in the database table. Since I want to avoid concurrency it also has to check if there is any job that is still running. So here are the tasks of this piece of code:
+I need some kind of timer that fires regularly, regardless of any circumstance. When the timer fires, a piece of code has to be run that executes a job if it finds one in the database table. Since I want to avoid concurrency it also has to check if there is any job still running. So here are the tasks of this piece of code:
 
 1. Check if there is a running job, if there is one, returns.
 2. Check the database if there are new jobs, if it finds nothing, returns.
@@ -29,11 +29,11 @@ I need some kind of timer that fires regularly, regardless of any circumstance. 
 
 The [aforementioned documentation page](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio) gives me almost all the information that is needed to achieve this so I just summarize it if you're lazy to read it (don't be):
 
-To implement a hosted service you have to create a class that implements `IHostedService` interface. It has two methods: `StartAsync` that contains the logic to start the background task, and `StopAsync` that is triggered when the host is performing a graceful shutdown. That is the place where you can stop your remaining operations. Then you can register this class as a hosted service in your application's `Program.cs` (for details see the docs). And that's it.
+To implement a hosted service you have to create a class that implements `IHostedService` interface. It has two methods: `StartAsync` that contains the logic to start the background task, and `StopAsync` that is triggered when the host is performing a graceful shutdown. This is the place where you can stop your remaining operations. Then you can register this class as a hosted service in your application's `Program.cs` (for details see the docs). And that's it.
 
 #### BackgroundTask
 
-There is an abstract class called `BackgroundTask` as part of the runtime ([see source code here](https://github.com/dotnet/runtime/blob/master/src/libraries/Microsoft.Extensions.Hosting.Abstractions/src/BackgroundService.cs)). If your service extends this class you can avoid writing boilerplate code you should write if you implement the interface only. You just have to override `ExecuteAsync`, put your long running logic there and it will be run in the background. The problem with it is that I can't execute something regularly in this method, because it is one long running task. Executing a job then waiting for a fixed time with `Task.Delay` wouldn't be truly regular because the length of each interval would depend on the length of each executed job.
+There is an abstract class called `BackgroundTask` as part of the runtime ([see source code here](https://github.com/dotnet/runtime/blob/master/src/libraries/Microsoft.Extensions.Hosting.Abstractions/src/BackgroundService.cs)). If your service extends this class you can avoid writing boilerplate code you should write if you implemented the interface only. You just have to override `ExecuteAsync`, put your long running logic there and it will be run in the background. The problem with it is that I can't execute something regularly in this method, because it is one long running task. Executing a job then waiting for a fixed time with `Task.Delay` wouldn't be truly regular because the length of each interval would depend on the length of each executed job.
 
 #### Timed background tasks example
 
