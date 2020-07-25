@@ -1,7 +1,7 @@
 ---
 title: 'Render Razor view from a dotnet core 3 console app'
 createdAt: '2020-04-17 12:45'
-excerpt: 'Razor views a strongly coupled to aspnet core mvc but you can use them in a console app with this minimum setup.'
+excerpt: 'Razor views are strongly coupled to aspnet core mvc but you can use them in a console app with this minimum setup.'
 postedBy: codernr
 tags:
   - 'dotnet core'
