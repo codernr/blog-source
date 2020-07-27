@@ -9,6 +9,9 @@ tags:
   - 'hosted service'
   - 'background service'
   - 'queue'
+metaProperties:
+  - property: 'og:image'
+    content: '/assets/img/posts/execute-queue-with-aspnet-core-timed-hosted-service.png'
 ---
 
 The best way to execute long running tasks in the background using ASP.NET Core is creating hosted services. There is a [great documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-3.1&tabs=visual-studio) of how you can achieve this on Microsoft docs, but I took these basic examples a bit further.
